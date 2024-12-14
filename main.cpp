@@ -151,9 +151,139 @@ void PrintBuffer(CircularBuffer* pBuf)
 CircularBuffer bufferA;
 CircularBuffer bufferB;
 
+void TestPartialMove() {
+  ClearBuf(&bufferA);
+  ClearBuf(&bufferB);
+
+  // Заповнюємо bufferA частково
+  for (size_t i = 0; i < 128; i++) {
+    WriteByte(&bufferA, (uint8_t)(i & 0xFF));
+  }
+
+  // Виконуємо тест для BufMoveSlow
+  auto startSlow = std::chrono::high_resolution_clock::now();
+  size_t resSlow = BufMoveSlow(&bufferB, &bufferA);
+  auto endSlow = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> diffSlow = endSlow - startSlow;
+
+  printf("BufMoveSlow moved %zu item(s) from BufferA to BufferB\n", resSlow);
+  printf("BufMoveSlow time: %.9f seconds\n", diffSlow.count());
+
+  // Виконуємо тест для BufMoveFast
+  ClearBuf(&bufferB);  // Очищаємо bufferB
+  auto startFast = std::chrono::high_resolution_clock::now();
+  size_t resFast = BufMoveFast(&bufferB, &bufferA);
+  auto endFast = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> diffFast = endFast - startFast;
+
+  printf("BufMoveFast moved %zu item(s) from BufferA to BufferB\n", resFast);
+  printf("BufMoveFast time: %.9f seconds\n", diffFast.count());
+}
+
+void TestFullMove() {
+  ClearBuf(&bufferA);
+  ClearBuf(&bufferB);
+
+  // Заповнюємо bufferA
+  for (size_t i = 0; i < 256; i++) {
+    WriteByte(&bufferA, (uint8_t)(i & 0xFF));
+  }
+
+  // Виконуємо тест для BufMoveSlow
+  auto startSlow = std::chrono::high_resolution_clock::now();
+  size_t resSlow = BufMoveSlow(&bufferB, &bufferA);
+  auto endSlow = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> diffSlow = endSlow - startSlow;
+
+  printf("BufMoveSlow moved %zu item(s) from BufferA to BufferB\n", resSlow);
+  printf("BufMoveSlow time: %.9f seconds\n", diffSlow.count());
+
+  // Виконуємо тест для BufMoveFast
+  ClearBuf(&bufferB);  // Очищаємо bufferB
+  auto startFast = std::chrono::high_resolution_clock::now();
+  size_t resFast = BufMoveFast(&bufferB, &bufferA);
+  auto endFast = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> diffFast = endFast - startFast;
+
+  printf("BufMoveFast moved %zu item(s) from BufferA to BufferB\n", resFast);
+  printf("BufMoveFast time: %.9f seconds\n", diffFast.count());
+}
+
+void TestPartialFill() {
+  ClearBuf(&bufferA);
+  ClearBuf(&bufferB);
+
+  // Заповнюємо bufferA частково (на 100 байтів)
+  for (size_t i = 0; i < 100; i++) {
+    WriteByte(&bufferA, (uint8_t)(i & 0xFF));
+  }
+
+  // Виконуємо тест для BufMoveSlow
+  auto startSlow = std::chrono::high_resolution_clock::now();
+  size_t resSlow = BufMoveSlow(&bufferB, &bufferA);
+  auto endSlow = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> diffSlow = endSlow - startSlow;
+
+  printf("BufMoveSlow moved %zu item(s) from BufferA to BufferB\n", resSlow);
+  printf("BufMoveSlow time: %.9f seconds\n", diffSlow.count());
+
+  // Виконуємо тест для BufMoveFast
+  ClearBuf(&bufferB);  // Очищаємо bufferB
+  auto startFast = std::chrono::high_resolution_clock::now();
+  size_t resFast = BufMoveFast(&bufferB, &bufferA);
+  auto endFast = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> diffFast = endFast - startFast;
+
+  printf("BufMoveFast moved %zu item(s) from BufferA to BufferB\n", resFast);
+  printf("BufMoveFast time: %.9f seconds\n", diffFast.count());
+}
+
+void TestOverflowMove() {
+  ClearBuf(&bufferA);
+  ClearBuf(&bufferB);
+
+
+  // Заповнюємо bufferA на 400 байтів (заповнюємо більшу частину)
+  for (size_t i = 0; i < 400; i++) {
+    WriteByte(&bufferA, (uint8_t)(i & 0xFF));
+  }
+
+  // Виконуємо тест для BufMoveSlow
+  auto startSlow = std::chrono::high_resolution_clock::now();
+  size_t resSlow = BufMoveSlow(&bufferB, &bufferA);
+  auto endSlow = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> diffSlow = endSlow - startSlow;
+
+  printf("BufMoveSlow moved %zu item(s) from BufferA to BufferB\n", resSlow);
+  printf("BufMoveSlow time: %.9f seconds\n", diffSlow.count());
+
+  // Виконуємо тест для BufMoveFast
+  ClearBuf(&bufferB);  // Очищаємо bufferB
+  auto startFast = std::chrono::high_resolution_clock::now();
+  size_t resFast = BufMoveFast(&bufferB, &bufferA);
+  auto endFast = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> diffFast = endFast - startFast;
+
+  printf("BufMoveFast moved %zu item(s) from BufferA to BufferB\n", resFast);
+  printf("BufMoveFast time: %.9f seconds\n", diffFast.count());
+}
+
+
 int main(){
   ClearBuf(&bufferA);
   ClearBuf(&bufferB);
+
+    printf("Running TestPartialMove...\n");
+  TestPartialMove();
+
+  printf("\nRunning TestFullMove...\n");
+  TestFullMove();
+
+  printf("\nRunning TestPartialFill...\n");
+  TestPartialFill();
+
+  printf("\nRunning TestOverflowMove...\n");
+  TestOverflowMove();
 
   // Заповнюємо bufferA
   for (size_t i = 0; i < 256; i++) {
